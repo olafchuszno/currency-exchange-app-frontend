@@ -62,17 +62,19 @@ export default function Page() {
   //     });
   // };
 
-  // const getTransactionFinalAmount = () => {
-  //   fetch('http://localhost:3030/transaction', {
-  //     method: 'post',
-  //     body: JSON.stringify({
-  //       amountToExchange: 100,
-  //       currency: 'EUR'
-  //     })
+  // , {
+  //   method: 'post',
+  //   body: JSON.stringify({
+  //     amountToExchange: 100,
+  //     currency: 'EUR'
   //   })
-  //     .then(response => response.json())
-  //     .then(data => console.log('data:', data));
   // }
+
+  const getTransactionFinalAmount = () => {
+    fetch('/api/transaction')
+      .then(response => response.json())
+      .then(data => console.log('data --5--:', data.transaction_amount));
+  }
 
   const getTransactionCheck = () => {
     fetch('/api/transaction')
@@ -86,6 +88,8 @@ export default function Page() {
     getExchangeRate();
 
     getTransactionCheck();
+
+    getTransactionFinalAmount();
 
     // const exchangeFetchInterval = setInterval(getExchangeRate, 10000);
 
