@@ -75,8 +75,11 @@ export default function Page() {
   return (
     <main>
       <section>
-        <h1>Hello, my first Next.js app!</h1>
+        <h1>Exchange rate</h1>
+
         <p>Exchange rate: {exchangeRate}</p>
+
+        <button onClick={() => getExchangeRate()}>Update Exchange rate</button>
       </section>
 
       <section style={{ border: '1px solid red', marginTop: '36px' }}>
@@ -119,7 +122,7 @@ export default function Page() {
             }}
             value={inputAmountInEur || ''}
             name="amount-in-euro"
-            placeholder="Enter an amount in EUR"
+            placeholder="Euro amount"
             type="number"
           />
 
@@ -139,7 +142,9 @@ export default function Page() {
         )}
       </section>
 
-      <section>
+      <section style={{ border: '1px solid red', marginTop: '36px' }}>
+        <h2>Make a Transaction</h2>
+
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -176,13 +181,14 @@ export default function Page() {
               setTransactionAmount(newTransactionAmount);
             }}
             value={transactionAmount || ''}
+            placeholder='Euro amount'
             type="number"
           />
 
           <button type="submit">Make a transaction</button>
         </form>
 
-        <div>transaction final amount: {transactionFinalAmount}</div>
+        {transactionFinalAmount && <div>transaction final amount: {transactionFinalAmount}</div>}
       </section>
     </main>
   );
