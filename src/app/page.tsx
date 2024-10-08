@@ -13,6 +13,9 @@ export default function Page() {
   const [inputAmountInEur, setInputAmountInEur] = useState<number | null>(null);
   const [inputAmountInEurError, setInputAmountInEurError] =
     useState<boolean>(false);
+  
+  const [transactionAmount, setTransactionAmount] = useState<number | null>(null)
+  const [transactionFinalAmount, setTransactionFinalAmount] = useState<number | null>(null)
 
   const getExchangeRate = () => {
     fetch('/api/exchange-rate')
@@ -20,8 +23,6 @@ export default function Page() {
         return response.json();
       })
       .then((data) => {
-        console.log('--- data:', data.exchange_rate);
-        console.log('--- data:', data);
         setExchangeRate(data.exchange_rate)
       })
       .catch(() => console.error('Error fetching exchange data'));
@@ -30,7 +31,6 @@ export default function Page() {
   const convertCurrency = () => {
     fetch('/api/exchange-rate')
       .then((response) => {
-        console.log('next internal api response:', response);
         return response.json();
       })
       .then((data) => {
@@ -46,54 +46,25 @@ export default function Page() {
       });
   };
 
-  // const makeTransaction = () => {
-  //   fetch('/api/transaction', {
-  //     method: 'post',
-  //   })
-  //     .then((response) => {
-  //       console.log('next internal api response:', response);
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       console.log('data in makeTransaction:', data)
-  //     })
-  //     .catch(() => {
-  //       console.log('error in makeTransaction function')
-  //     });
-  // };
 
-  // , {
-  //   method: 'post',
-  //   body: JSON.stringify({
-  //     amountToExchange: 100,
-  //     currency: 'EUR'
-  //   })
-  // }
-
-  const getTransactionFinalAmount = () => {
-    fetch('/api/transaction')
+  const finaliseTransaction = (transactionAmount: number) => {
+    fetch('/api/transaction', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({transaction_amount: transactionAmount}),
+    })
       .then(response => response.json())
-      .then(data => console.log('data --5--:', data.transaction_amount));
-  }
-
-  const getTransactionCheck = () => {
-    fetch('/api/transaction')
-      .then(response => {
-        return response.json()
-      })
-      .then(data => console.log('transaction returned:', data.response));
+      .then(data => setTransactionFinalAmount(data.transaction_amount as number));
   }
 
   useEffect(() => {
     getExchangeRate();
 
-    getTransactionCheck();
+    const exchangeFetchInterval = setInterval(getExchangeRate, 1000);
 
-    getTransactionFinalAmount();
-
-    // const exchangeFetchInterval = setInterval(getExchangeRate, 10000);
-
-    // return () => clearInterval(exchangeFetchInterval);
+    return () => clearInterval(exchangeFetchInterval);
   }, []);
 
   // useEffect(() => {
@@ -120,7 +91,6 @@ export default function Page() {
             setInputAmountInEurError(false);
 
             if (!isEurInputValid) {
-              console.log('Please enter a valid amount');
               setInputAmountInEurError(true);
               return;
             }
@@ -177,7 +147,49 @@ export default function Page() {
       </section>
 
       <section>
-        {/* <button onClick={() => makeTransaction()}>Make a transaction</button> */}
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+
+            // Validate data
+            if (!transactionAmount) {
+              alert('Wrong transaction amount - not submittign the form!');
+              return;
+            }
+
+            // Data is valid
+            finaliseTransaction(transactionAmount);
+          }}
+          action=""
+        >
+          <input
+            onChange={(event) => {
+              event.preventDefault();
+
+              const newTransactionInputValue = event.target.value;
+
+              if (newTransactionInputValue === '') {
+                setTransactionAmount(null);
+                return;
+              }
+
+              const newTransactionAmount = +event.target.value;
+
+              if (!newTransactionAmount || newTransactionAmount <= 0) {
+                alert('Transaction amount has to be larger than 0');
+                return;
+              }
+
+              setTransactionAmount(newTransactionAmount);
+            }}
+            value={transactionAmount || ''}
+            type="number"
+          />
+
+          <button type="submit">Make a transaction</button>
+        </form>
+
+        <div>transaction final amount: {transactionFinalAmount}</div>
       </section>
     </main>
   );
