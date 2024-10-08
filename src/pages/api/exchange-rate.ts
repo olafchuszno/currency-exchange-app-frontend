@@ -25,27 +25,4 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         error: error?.message
       })
     );
-
-  // try {
-  //   const response = await fetch(apiUrl, {
-  //     headers: {
-  //       [apiKeyHeader]: apiKey,  // Send the API key securely in the server-side request
-  //     },
-  //   });
-
-  //   if (!response.ok) {
-  //     throw new Error('Failed to fetch exchange rate');
-  //   }
-
-  //   const data = await response.json();
-
-  //   res.status(200).json({ exchange_rate: data.exchange_rate });
-
-  // } catch (error) {
-  //   if (error instanceof Error) {
-  //     res.status(500).json({ error: error.message });
-  //   } else {
-  //     res.status(500).json({ error: 'There has been a server error' });
-  //   }
-  // }
 }

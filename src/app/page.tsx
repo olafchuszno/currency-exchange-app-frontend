@@ -67,9 +67,6 @@ export default function Page() {
     return () => clearInterval(exchangeFetchInterval);
   }, []);
 
-  // useEffect(() => {
-  //   // When exchange rate changes we want to change the form result
-  // }, [exchangeRate]);
 
   const isEurInputValid = useMemo(() => {
     return inputAmountInEur && inputAmountInEur >= 0;
@@ -105,10 +102,6 @@ export default function Page() {
               setInputAmountInEurError(false);
 
               const valueFromInput: string = event.target.value;
-
-              // if (valueFromInput[0] === '0' && valueFromInput[1] !== ',') {
-              //   valueFromInput = valueFromInput.slice(1);
-              // }
 
               console.log('valueFromInput:', valueFromInput);
 
