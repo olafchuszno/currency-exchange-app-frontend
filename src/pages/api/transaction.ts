@@ -2,8 +2,10 @@ import { TransactionDataToNextApi } from '@/app/page';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export interface TransactionData {
-  transaction_eur_amount: number,
-  timestamp: string,
+  transaction_eur_amount: number;
+  transaction_pln_amount: number;
+  currenty_exchange_rate: number;
+  timestamp: string;
 }
 
 interface TransactionError {
@@ -32,9 +34,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Transa
       return response.json();
     })
     .then((transactionData: TransactionData) => {
-      const { transaction_eur_amount, timestamp } = transactionData;
-
-      res.status(200).json({ transaction_eur_amount, timestamp });
+      // TODO - validation
+      res.status(200).json(transactionData);
     })
     .catch((error) => {
       res.status(500).json({

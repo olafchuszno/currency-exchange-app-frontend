@@ -22,8 +22,7 @@ export default function Page() {
     useState<boolean>(false);
   
   const [transactionAmount, setTransactionAmount] = useState<number | null>(null)
-  const [transactionFinalAmount, setTransactionFinalAmount] = useState<number | null>(null)
-  const [transactionTimestamp, setTransactionTimestamp] = useState<string | null>(null)
+  const [transactionDetails, setTransactionDetails] = useState<TransactionData | null>(null)
 
 
   const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] = useState<string | null>(null);
@@ -63,8 +62,6 @@ export default function Page() {
 
 
   const finaliseTransaction = (transactionAmount: number) => {
-    setTransactionTimestamp(null);
-
     fetch('/api/transaction', {
       method: 'POST',
       headers: {
@@ -74,10 +71,7 @@ export default function Page() {
     })
       .then((response) => response.json())
       .then((transactionData: TransactionData) => {
-        const { transaction_eur_amount, timestamp } = transactionData;
-
-        setTransactionFinalAmount(transaction_eur_amount);
-        setTransactionTimestamp(timestamp);
+        setTransactionDetails(transactionData);
       });
   };
 
@@ -213,8 +207,28 @@ export default function Page() {
           <button type="submit">Make a transaction</button>
         </form>
 
-        {transactionFinalAmount && <div>transaction final amount: {transactionFinalAmount}</div>}
-        {transactionTimestamp && <div>transaction timestam: {transactionTimestamp}</div>}
+        {transactionDetails && <p>Transaction completed!</p>}
+
+        {transactionDetails && (
+          <table>
+            <thead>
+              <tr>
+                <th>Amount in PLN</th>
+                <th>Amount in EUR</th>
+                <th>Exchange rate EUR/PLN</th>
+                <th>Time of transaction</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{transactionDetails.transaction_eur_amount}</td>
+                <td>{transactionDetails.transaction_pln_amount}</td>
+                <td>{transactionDetails.currenty_exchange_rate}</td>
+                <td>{transactionDetails.timestamp}</td>
+              </tr>
+            </tbody>
+          </table>
+        )}
       </section>
     </main>
   );
