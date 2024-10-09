@@ -121,7 +121,7 @@ export default function Page() {
   return (
     <main className='main'>
       <section className='section-tile'>
-        <h1>Exchange rate</h1>
+        <h2 className='title title--2'>Exchange rate</h2>
 
         <p>Exchange rate: <span data-cy="exchange-rate">{exchangeRate}</span></p>
 
@@ -131,7 +131,7 @@ export default function Page() {
       </section>
 
       <section className='section-tile'>
-        <h2>Conversion calculator</h2>
+        <h2 className='title title--2'>Conversion calculator</h2>
 
         <form
           onSubmit={(event: React.FormEvent) => {
@@ -192,7 +192,7 @@ export default function Page() {
       </section>
 
       <section className='section-tile'>
-        <h2>Make a Transaction</h2>
+        <h2 className='title title--2'>Make a Transaction</h2>
 
         <form
           onSubmit={(event) => {
