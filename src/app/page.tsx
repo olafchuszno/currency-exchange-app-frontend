@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import './page.scss';
-import getTime from './helpers/getTime';
 import { TransactionData } from '@/pages/api/transaction';
 import { getFixedFloatingPointNumber } from './helpers/getFixedFloatingPointNumber';
+import getTime from './helpers/getTime';
+import './page.scss';
 
 export interface TransactionDataToNextApi {
   transaction_eur_amount: number
@@ -253,8 +253,8 @@ export default function Page() {
           <table>
             <thead>
               <tr>
-                <th>Amount in PLN</th>
                 <th>Amount in EUR</th>
+                <th>Amount in PLN</th>
                 <th>Exchange rate EUR/PLN</th>
                 <th>Time of transaction</th>
               </tr>
