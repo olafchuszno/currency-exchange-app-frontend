@@ -62,7 +62,7 @@ export default function Page() {
   useEffect(() => {
     getExchangeRate();
 
-    const exchangeFetchInterval = setInterval(getExchangeRate, 1000);
+    const exchangeFetchInterval = setInterval(getExchangeRate, 5000);
 
     return () => clearInterval(exchangeFetchInterval);
   }, []);
@@ -77,7 +77,7 @@ export default function Page() {
       <section>
         <h1>Exchange rate</h1>
 
-        <p>Exchange rate: {exchangeRate}</p>
+        <p>Exchange rate: <span data-cy="exchange-rate">{exchangeRate}</span></p>
 
         <button onClick={() => getExchangeRate()}>Update Exchange rate</button>
       </section>
@@ -137,8 +137,9 @@ export default function Page() {
         {currencyExchangeFormError && (
           <p>Error occurred when getting exchange rate. Please try again</p>
         )}
+
         {!currencyExchangeFormError && convertedCurrencyRate !== null && (
-          <p>Requested value in PLN: {convertedCurrencyRate}</p>
+          <div>Requested value in PLN: <span data-cy="converted-currency-rate">{convertedCurrencyRate}</span></div>
         )}
       </section>
 
