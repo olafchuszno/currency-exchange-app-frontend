@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import './page.scss';
 
 export default function Page() {
   const [exchangeRate, setExchangeRate] = useState<null | number>(null);
@@ -16,6 +17,7 @@ export default function Page() {
   
   const [transactionAmount, setTransactionAmount] = useState<number | null>(null)
   const [transactionFinalAmount, setTransactionFinalAmount] = useState<number | null>(null)
+  // const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] = useState<string | null>(null);
 
   const getExchangeRate = () => {
     fetch('/api/exchange-rate')
@@ -62,7 +64,7 @@ export default function Page() {
   useEffect(() => {
     getExchangeRate();
 
-    const exchangeFetchInterval = setInterval(getExchangeRate, 5000);
+    const exchangeFetchInterval = setInterval(getExchangeRate, 10000);
 
     return () => clearInterval(exchangeFetchInterval);
   }, []);
@@ -73,8 +75,8 @@ export default function Page() {
   }, [inputAmountInEur]);
 
   return (
-    <main>
-      <section>
+    <main className='main'>
+      <section className='section-tile'>
         <h1>Exchange rate</h1>
 
         <p>Exchange rate: <span data-cy="exchange-rate">{exchangeRate}</span></p>
@@ -82,7 +84,7 @@ export default function Page() {
         <button onClick={() => getExchangeRate()}>Update Exchange rate</button>
       </section>
 
-      <section style={{ border: '1px solid red', marginTop: '36px' }}>
+      <section className='section-tile'>
         <h2>Conversion calculator</h2>
 
         <form
@@ -143,7 +145,7 @@ export default function Page() {
         )}
       </section>
 
-      <section style={{ border: '1px solid red', marginTop: '36px' }}>
+      <section className='section-tile'>
         <h2>Make a Transaction</h2>
 
         <form

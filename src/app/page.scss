@@ -1,0 +1,17 @@
+@use './styles/variables' as *;
+
+.main {
+  display: flex;
+  gap: 36px;
+  background-color: rgb(67, 62, 62);
+}
+
+.section-tile {
+  flex-grow: 1;
+  background-color: $color-background;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid red;
+}
