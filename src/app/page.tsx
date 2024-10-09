@@ -9,6 +9,10 @@ export interface TransactionDataToNextApi {
   transaction_eur_amount: number
 }
 
+interface TransactionError {
+  message: string;
+}
+
 export default function Page() {
   const [exchangeRate, setExchangeRate] = useState<null | number>(null);
   const [currencyExchangeFormError, setCurrencyExchangeFormError] =
@@ -22,8 +26,10 @@ export default function Page() {
     useState<boolean>(false);
   
   const [transactionAmount, setTransactionAmount] = useState<number | null>(null)
-  const [transactionDetails, setTransactionDetails] = useState<TransactionData | null>(null)
+  const [transactionDetails, setTransactionDetails] = useState<TransactionData | null>(null);
+  const [transactionError, setTransactionError] = useState<TransactionError | null>(null);
 
+  const [isFinalisingTransaction, setIsFinalisingTransaction] = useState(false);
 
   const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] = useState<string | null>(null);
 
@@ -62,6 +68,9 @@ export default function Page() {
 
 
   const finaliseTransaction = (transactionAmount: number) => {
+    setTransactionDetails(null);
+    setIsFinalisingTransaction(true);
+
     fetch('/api/transaction', {
       method: 'POST',
       headers: {
@@ -72,7 +81,15 @@ export default function Page() {
       .then((response) => response.json())
       .then((transactionData: TransactionData) => {
         setTransactionDetails(transactionData);
-      });
+      })
+      .catch(() => {
+        const transactionError: TransactionError = {
+          message: 'Could not finalise the transaction.',
+        }
+
+        setTransactionError(transactionError)
+      })
+      .finally(() => { setIsFinalisingTransaction(false) });
   };
 
   useEffect(() => {
@@ -206,6 +223,10 @@ export default function Page() {
 
           <button type="submit">Make a transaction</button>
         </form>
+
+        {isFinalisingTransaction && <p>Finalising the transaction...</p>}
+
+        {transactionError && <p>{transactionError.message}. Please try again.</p>}
 
         {transactionDetails && <p>Transaction completed!</p>}
 
