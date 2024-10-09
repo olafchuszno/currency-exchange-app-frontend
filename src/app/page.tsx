@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import './page.scss';
+import getTime from './helpers/getTime';
 
 export default function Page() {
   const [exchangeRate, setExchangeRate] = useState<null | number>(null);
@@ -17,7 +18,7 @@ export default function Page() {
   
   const [transactionAmount, setTransactionAmount] = useState<number | null>(null)
   const [transactionFinalAmount, setTransactionFinalAmount] = useState<number | null>(null)
-  // const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] = useState<string | null>(null);
+  const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] = useState<string | null>(null);
 
   const getExchangeRate = () => {
     fetch('/api/exchange-rate')
@@ -25,7 +26,8 @@ export default function Page() {
         return response.json();
       })
       .then((data) => {
-        setExchangeRate(data.exchange_rate)
+        setExchangeRate(data.exchange_rate);
+        setLastCurrencyRateUpdateTimestamp(getTime());
       })
       .catch(() => console.error('Error fetching exchange data'));
   };
@@ -80,6 +82,8 @@ export default function Page() {
         <h1>Exchange rate</h1>
 
         <p>Exchange rate: <span data-cy="exchange-rate">{exchangeRate}</span></p>
+
+        {lastCurrencyRateUpdateTimestamp && <p>Last exchange rate update: {lastCurrencyRateUpdateTimestamp}</p>}
 
         <button onClick={() => getExchangeRate()}>Update Exchange rate</button>
       </section>
