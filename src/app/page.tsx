@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import './page.scss';
 import getTime from './helpers/getTime';
 import { TransactionData } from '@/pages/api/transaction';
+import { getFixedFloatingPointNumber } from './helpers/getFixedFloatingPointNumber';
 
 export interface TransactionDataToNextApi {
   transaction_eur_amount: number
@@ -26,12 +27,24 @@ export default function Page() {
     useState<boolean>(false);
   
   const [transactionAmount, setTransactionAmount] = useState<number | null>(null)
+  const [forecastedTransactionPlnAmount, setForecastedTransactionPlnAmount] = useState<number | null>(null)
   const [transactionDetails, setTransactionDetails] = useState<TransactionData | null>(null);
   const [transactionError, setTransactionError] = useState<TransactionError | null>(null);
 
   const [isFinalisingTransaction, setIsFinalisingTransaction] = useState(false);
 
   const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] = useState<string | null>(null);
+  
+  useEffect(() => {
+    console.log('--- transactionAmount: ---', transactionAmount);
+    console.log('--- exchangeRate: ---', exchangeRate);
+
+    if (transactionAmount && exchangeRate) {
+      setForecastedTransactionPlnAmount(getFixedFloatingPointNumber(transactionAmount * exchangeRate));
+    } else {
+      setForecastedTransactionPlnAmount(null);
+    }
+  }, [exchangeRate, transactionAmount])
 
   const getExchangeRate = () => {
     fetch('/api/exchange-rate')
@@ -223,6 +236,12 @@ export default function Page() {
 
           <button type="submit">Make a transaction</button>
         </form>
+
+        {forecastedTransactionPlnAmount && !transactionDetails && !isFinalisingTransaction && (
+          <div>
+            <p>Forecasted amonut in PLN: {forecastedTransactionPlnAmount}</p>
+            <p>(exchange rate is fluctuating and is likely to change)</p>
+        </div>)}
 
         {isFinalisingTransaction && <p>Finalising the transaction...</p>}
 
