@@ -1,11 +1,17 @@
+import { TransactionDataToNextApi } from '@/app/page';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-interface TransactionData {
-  transaction_amount: number
+export interface TransactionData {
+  transaction_eur_amount: number,
+  timestamp: string,
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const transactionAmount = (req.body as TransactionData).transaction_amount;
+interface TransactionError {
+  message: string,
+}
+
+export default function handler(req: NextApiRequest, res: NextApiResponse<TransactionData | TransactionError>) {
+  const transactionAmount = (req.body as TransactionDataToNextApi).transaction_eur_amount;
 
   if (!transactionAmount || transactionAmount < 0) {
     throw new Error('Error - Wrong transaction amount')
@@ -26,11 +32,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       return response.json();
     })
     .then((transactionData: TransactionData) => {
-      res.status(200).json({transaction_amount: transactionData.transaction_amount});
+      const { transaction_eur_amount, timestamp } = transactionData;
+
+      res.status(200).json({ transaction_eur_amount, timestamp });
     })
     .catch((error) => {
       res.status(500).json({
-        error: error?.message + 'OOPSY' || 'A server occurred',
+        message: error?.message || 'A server error without spesicif message occurred',
       })
     }
     );

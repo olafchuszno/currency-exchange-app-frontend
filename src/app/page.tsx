@@ -3,6 +3,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import './page.scss';
 import getTime from './helpers/getTime';
+import { TransactionData } from '@/pages/api/transaction';
+
+export interface TransactionDataToNextApi {
+  transaction_eur_amount: number
+}
 
 export default function Page() {
   const [exchangeRate, setExchangeRate] = useState<null | number>(null);
@@ -18,6 +23,9 @@ export default function Page() {
   
   const [transactionAmount, setTransactionAmount] = useState<number | null>(null)
   const [transactionFinalAmount, setTransactionFinalAmount] = useState<number | null>(null)
+  const [transactionTimestamp, setTransactionTimestamp] = useState<string | null>(null)
+
+
   const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] = useState<string | null>(null);
 
   const getExchangeRate = () => {
@@ -26,7 +34,10 @@ export default function Page() {
         return response.json();
       })
       .then((data) => {
-        setExchangeRate(data.exchange_rate);
+        const { exchange_rate } = data;
+
+        setExchangeRate(exchange_rate);
+
         setLastCurrencyRateUpdateTimestamp(getTime());
       })
       .catch(() => console.error('Error fetching exchange data'));
@@ -52,16 +63,23 @@ export default function Page() {
 
 
   const finaliseTransaction = (transactionAmount: number) => {
+    setTransactionTimestamp(null);
+
     fetch('/api/transaction', {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({transaction_amount: transactionAmount}),
+      body: JSON.stringify({ transaction_eur_amount: transactionAmount } as TransactionDataToNextApi),
     })
-      .then(response => response.json())
-      .then(data => setTransactionFinalAmount(data.transaction_amount as number));
-  }
+      .then((response) => response.json())
+      .then((transactionData: TransactionData) => {
+        const { transaction_eur_amount, timestamp } = transactionData;
+
+        setTransactionFinalAmount(transaction_eur_amount);
+        setTransactionTimestamp(timestamp);
+      });
+  };
 
   useEffect(() => {
     getExchangeRate();
@@ -196,6 +214,7 @@ export default function Page() {
         </form>
 
         {transactionFinalAmount && <div>transaction final amount: {transactionFinalAmount}</div>}
+        {transactionTimestamp && <div>transaction timestam: {transactionTimestamp}</div>}
       </section>
     </main>
   );
