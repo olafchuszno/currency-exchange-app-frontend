@@ -34,6 +34,10 @@ export default function Page() {
   const [isFinalisingTransaction, setIsFinalisingTransaction] = useState(false);
 
   const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] = useState<string | null>(null);
+
+  const [allTransactions, setAllTransactions] = useState<null | TransactionData[]>(null)
+  const [isFetchingAllTransactions, setIsFetchingAllTransactions] = useState<boolean>(false);
+  const [fetchAllTransactionError, setFetchAllTransactionError] = useState<boolean>(false);
   
   useEffect(() => {
     console.log('--- transactionAmount: ---', transactionAmount);
@@ -78,6 +82,23 @@ export default function Page() {
         return null;
       });
   };
+
+  const getAllTransactions = () => {
+    setIsFetchingAllTransactions(true)
+    setFetchAllTransactionError(false);
+
+    fetch('/api/transaction')
+      .then((response) => response.json())
+      .then((transactionsResponse: {transactions: TransactionData[]}) => {
+        setAllTransactions(transactionsResponse.transactions)
+      })
+      .catch(() => {
+        setFetchAllTransactionError(true)
+      })
+      .finally(() => {
+        setIsFetchingAllTransactions(false)
+    })
+  }
 
 
   const finaliseTransaction = (transactionAmount: number) => {
@@ -264,11 +285,41 @@ export default function Page() {
                 <td>{transactionDetails.transaction_eur_amount}</td>
                 <td>{transactionDetails.transaction_pln_amount}</td>
                 <td>{transactionDetails.currenty_exchange_rate}</td>
-                <td>{transactionDetails.timestamp}</td>
+                <td>{transactionDetails.createdAt}</td>
               </tr>
             </tbody>
           </table>
         )}
+      </section>
+
+      <section className='section-tile'>
+        <h2>All Transactions</h2>
+
+        {isFetchingAllTransactions && <p>Fetching transactions...</p>}
+
+        {fetchAllTransactionError && <p>Error fetching transactions.</p>}
+
+        {!isFetchingAllTransactions && !!allTransactions && !allTransactions.length && <p>No transactions yet.</p>}
+
+        <button onClick={() => {getAllTransactions()}}>Get all transactions</button>
+        {allTransactions?.length && <table>
+            <thead>
+              <tr>
+                <th>Amount in EUR</th>
+                <th>Amount in PLN</th>
+                <th>Exchange rate EUR/PLN</th>
+                <th>Time of transaction</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allTransactions.length && allTransactions.map((transaction: TransactionData) => (<tr key={transaction.id}>
+                <td>{transaction.transaction_eur_amount}</td>
+                <td>{transaction.transaction_pln_amount}</td>
+                <td>{transaction.currenty_exchange_rate}</td>
+                <td>{transaction.createdAt}</td>
+              </tr>))}
+            </tbody>
+          </table>}
       </section>
     </main>
   );

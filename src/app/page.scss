@@ -3,10 +3,11 @@
 
 .main {
   display: flex;
-  gap: 36px;
+  gap: $gap-main;
   background-color: rgb(67, 62, 62);
   font-family: Roboto;
-  padding: 36px;
+  padding: $padding-main;
+  flex-wrap: wrap;
 
   @media (max-width: 850px) {
     flex-direction: column;
@@ -16,7 +17,8 @@
 
 .section-tile {
   flex-grow: 1;
-  width: calc((100% - (2 * 16px)) / 3);
+  box-sizing: border-box;
+  width: calc((100% - (2 * $gap-main) - ($padding-main * 2)) / 3);
   background-color: $color-background;
   color: whitesmoke;
   display: flex;

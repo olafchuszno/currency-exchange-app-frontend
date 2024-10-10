@@ -2,17 +2,32 @@ import { TransactionDataToNextApi } from '@/app/page';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export interface TransactionData {
+  id: number,
   transaction_eur_amount: number;
   transaction_pln_amount: number;
   currenty_exchange_rate: number;
-  timestamp: string;
+  createdAt: string;
 }
 
 interface TransactionError {
   message: string,
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<TransactionData | TransactionError>) {
+export default function handler(req: NextApiRequest, res: NextApiResponse<TransactionData | {transactions: TransactionData[]} | TransactionError>) {
+  if (req.method === 'GET') {
+    fetch('http://localhost:3030/transaction')
+      .then((response) => response.json())
+      .then((transactions: TransactionData[]) => {
+        return res.status(200).json({transactions})
+      })
+      .catch((error) => {
+        return res.status(500).json({
+          message: error?.message || 'A server error without spesicif message occurred',
+        })
+      })
+    return;
+  }
+
   const transactionAmount = (req.body as TransactionDataToNextApi).transaction_eur_amount;
 
   if (!transactionAmount || transactionAmount < 0) {
@@ -24,7 +39,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Transa
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({amountToExchange: transactionAmount})
+    body: JSON.stringify({transaction_eur_amount: transactionAmount})
   })
     .then((response) => {
       if (!response.ok) {
@@ -38,7 +53,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Transa
       res.status(200).json(transactionData);
     })
     .catch((error) => {
-      res.status(500).json({
+      return res.status(500).json({
         message: error?.message || 'A server error without spesicif message occurred',
       })
     }

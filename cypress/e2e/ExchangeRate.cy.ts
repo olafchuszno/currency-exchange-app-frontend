@@ -32,12 +32,10 @@ describe('e2e', () => {
             const numericConvertedRate = parseFloat(convertedRate.trim());
 
             console.log('Numeric Converted Rate:', numericConvertedRate);
-          console.log('Expected Value:', numericCurrencyRateFromApi);
-
-            // Assert whether calculated amount is right
-            expect(numericConvertedRate).to.equal(
-              Math.round(numericCurrencyRateFromApi * 100 * 100) / 100
-            );
+            console.log('Expected Value:', numericCurrencyRateFromApi);
+            
+            // Assert whether calculated amount is right - wrap cause in async code
+            cy.wrap(numericConvertedRate).should('equal', Math.round(numericCurrencyRateFromApi * 100 * 100) / 100)
           });
       });
   });
