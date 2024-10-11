@@ -1,4 +1,3 @@
-
 FROM node:18
 
 WORKDIR /app
@@ -10,6 +9,8 @@ RUN npm install -g @nestjs/cli
 RUN npm install
 
 COPY . .
+
+COPY .env .env
 
 EXPOSE 3000
 
