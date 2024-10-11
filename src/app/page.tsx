@@ -51,9 +51,6 @@ export default function Page() {
     useState<boolean>(false);
 
   useEffect(() => {
-    console.log('--- transactionAmount: ---', transactionAmount);
-    console.log('--- exchangeRate: ---', exchangeRate);
-
     if (transactionAmount && exchangeRate) {
       setForecastedTransactionPlnAmount(
         getFixedFloatingPointNumber(transactionAmount * exchangeRate)
@@ -157,12 +154,12 @@ export default function Page() {
     event.preventDefault();
     setInputAmountInEurError(false);
     const valueFromInput: string = event.target.value;
-    console.log('valueFromInput:', valueFromInput);
+
     const numericValueFromInput: number = +valueFromInput;
-    console.log('+event.target.value:', +event.target.value);
+
     if (numericValueFromInput < 0) {
-      console.log('error in input');
       setInputAmountInEurError(true);
+
       return;
     }
     setInputAmountInEur(numericValueFromInput);
