@@ -36,11 +36,46 @@
 }
 
 .title {
+  max-width: max-content;
 
   &--2 {
     color: whitesmoke;
     font-size: 32px;
     font-weight: 300;
     margin: 0;
+  }
+}
+
+input {
+  border: none;
+  border-radius: 4px;
+  padding-left: 4px;
+  box-sizing: border-box;
+}
+
+.button-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: max-content;
+}
+
+.button {
+  background-color: rgb(162, 118, 76);
+  color: rgb(45, 32, 32);
+  font-weight: 600;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:focus {
+    background-color: rgb(220, 199, 173);
+    color: rgb(67, 44, 44);
+  }
+
+  &:disabled {
+    background-color: rgb(88, 88, 88);
+    color: rgb(221, 221, 221);
   }
 }
