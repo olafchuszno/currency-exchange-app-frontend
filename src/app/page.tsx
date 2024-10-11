@@ -293,7 +293,7 @@ export default function Page() {
       </section>
 
       <section className='section-tile'>
-        <h2>All Transactions</h2>
+        <h2 className='title title--2'>All Transactions</h2>
 
         {isFetchingAllTransactions && <p>Fetching transactions...</p>}
 
@@ -308,7 +308,7 @@ export default function Page() {
                 <th>Amount in EUR</th>
                 <th>Amount in PLN</th>
                 <th>Exchange rate EUR/PLN</th>
-                <th>Time of transaction</th>
+                <th>Time of transaction (d/m/y)</th>
               </tr>
             </thead>
             <tbody>
@@ -316,11 +316,17 @@ export default function Page() {
                 <td>{transaction.transaction_eur_amount}</td>
                 <td>{transaction.transaction_pln_amount}</td>
                 <td>{transaction.currenty_exchange_rate}</td>
-                <td>{transaction.createdAt}</td>
+                <td>{parseTransactionTime(transaction.createdAt)}</td>
               </tr>))}
             </tbody>
           </table>}
       </section>
     </main>
   );
+}
+
+function parseTransactionTime(timestamp: string) {
+  const date = new Date(timestamp);
+
+  return `${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 }
