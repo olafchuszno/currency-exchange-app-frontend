@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { TransactionData } from '@/pages/api/transaction';
+import { TransactionsTable } from './components/TransactionsTable/TransactionsTable';
 import { getFixedFloatingPointNumber } from './helpers/getFixedFloatingPointNumber';
 import getTime from './helpers/getTime';
 import './page.scss';
-import parseTransactionTime from './helpers/parseTransactionTime';
 
 export interface TransactionDataToNextApi {
   transaction_eur_amount: number;
@@ -153,6 +153,36 @@ export default function Page() {
     return inputAmountInEur && inputAmountInEur >= 0;
   }, [inputAmountInEur]);
 
+  const handleExchangeRateInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    setInputAmountInEurError(false);
+    const valueFromInput: string = event.target.value;
+    console.log('valueFromInput:', valueFromInput);
+    const numericValueFromInput: number = +valueFromInput;
+    console.log('+event.target.value:', +event.target.value);
+    if (numericValueFromInput < 0) {
+      console.log('error in input');
+      setInputAmountInEurError(true);
+      return;
+    }
+    setInputAmountInEur(numericValueFromInput);
+  }
+
+  const handleTransactionAmountInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const newTransactionInputValue = event.target.value;
+    if (newTransactionInputValue === '') {
+      setTransactionAmount(null);
+      return;
+    }
+    const newTransactionAmount = +event.target.value;
+    if (!newTransactionAmount || newTransactionAmount <= 0) {
+      alert('Transaction amount has to be larger than 0');
+      return;
+    }
+    setTransactionAmount(newTransactionAmount);
+  }
+
   return (
     <main className="main">
       <section className="section-tile">
@@ -192,20 +222,7 @@ export default function Page() {
         >
           <div className='button-pair'>
             <input
-              onChange={(event) => {
-                event.preventDefault();
-                setInputAmountInEurError(false);
-                const valueFromInput: string = event.target.value;
-                console.log('valueFromInput:', valueFromInput);
-                const numericValueFromInput: number = +valueFromInput;
-                console.log('+event.target.value:', +event.target.value);
-                if (numericValueFromInput < 0) {
-                  console.log('error in input');
-                  setInputAmountInEurError(true);
-                  return;
-                }
-                setInputAmountInEur(numericValueFromInput);
-              }}
+              onChange={handleExchangeRateInputChange}
               value={inputAmountInEur || ''}
               name="amount-in-euro"
               placeholder="Euro amount"
@@ -255,20 +272,7 @@ export default function Page() {
         >
           <div className='button-pair'>
             <input
-              onChange={(event) => {
-                event.preventDefault();
-                const newTransactionInputValue = event.target.value;
-                if (newTransactionInputValue === '') {
-                  setTransactionAmount(null);
-                  return;
-                }
-                const newTransactionAmount = +event.target.value;
-                if (!newTransactionAmount || newTransactionAmount <= 0) {
-                  alert('Transaction amount has to be larger than 0');
-                  return;
-                }
-                setTransactionAmount(newTransactionAmount);
-              }}
+              onChange={handleTransactionAmountInputChange}
               value={transactionAmount || ''}
               placeholder="Euro amount"
               type="number"
@@ -297,24 +301,7 @@ export default function Page() {
         {transactionDetails && <p>Transaction completed!</p>}
 
         {transactionDetails && (
-          <table>
-            <thead>
-              <tr>
-                <th>Amount in EUR</th>
-                <th>Amount in PLN</th>
-                <th>Exchange rate EUR/PLN</th>
-                <th>Time of transaction</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{transactionDetails.transaction_eur_amount}</td>
-                <td>{transactionDetails.transaction_pln_amount}</td>
-                <td>{transactionDetails.currenty_exchange_rate}</td>
-                <td>{parseTransactionTime(transactionDetails.createdAt)}</td>
-              </tr>
-            </tbody>
-          </table>
+          <TransactionsTable shortenedHeaders={true} transactions={[transactionDetails]} />
         )}
       </section>
 
@@ -339,27 +326,7 @@ export default function Page() {
         </div>
 
         {allTransactions?.length && (
-          <table>
-            <thead>
-              <tr>
-                <th>Amount in EUR</th>
-                <th>Amount in PLN</th>
-                <th>Exchange rate EUR/PLN</th>
-                <th>Time of transaction (d/m/y)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allTransactions.length &&
-                allTransactions.map((transaction: TransactionData) => (
-                  <tr key={transaction.id}>
-                    <td>{transaction.transaction_eur_amount}</td>
-                    <td>{transaction.transaction_pln_amount}</td>
-                    <td>{transaction.currenty_exchange_rate}</td>
-                    <td>{parseTransactionTime(transaction.createdAt)}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+          <TransactionsTable transactions={allTransactions} />
         )}
       </section>
     </main>
