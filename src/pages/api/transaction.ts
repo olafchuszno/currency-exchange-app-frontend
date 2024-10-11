@@ -28,9 +28,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Transa
     return;
   }
 
-  const transactionAmount = (req.body as TransactionDataToNextApi).transaction_eur_amount;
+  const transactionEurAmount = (req.body as TransactionDataToNextApi).transaction_eur_amount;
 
-  if (!transactionAmount || transactionAmount < 0) {
+  if (!transactionEurAmount || transactionEurAmount < 0) {
     throw new Error('Error - Wrong transaction amount')
   }
 
@@ -39,7 +39,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Transa
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({transaction_eur_amount: transactionAmount})
+    body: JSON.stringify({transaction_eur_amount: transactionEurAmount})
   })
     .then((response) => {
       if (!response.ok) {
