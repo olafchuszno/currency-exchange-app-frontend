@@ -17,6 +17,8 @@ interface TransactionError {
 
 export default function Page() {
   const [exchangeRate, setExchangeRate] = useState<null | number>(null);
+  const [exchangeRateFetchError, setExchangeRateFetchError] = useState<boolean>(false);
+
   const [currencyExchangeFormError, setCurrencyExchangeFormError] =
     useState<boolean>(false);
   const [convertedCurrencyRate, setConvertedCurrencyRate] = useState<
@@ -60,8 +62,8 @@ export default function Page() {
     }
   }, [exchangeRate, transactionAmount]);
 
-  const getExchangeRate = () => {
-    fetch('/api/exchange-rate')
+  const updateExchangeRate = () => {
+    fetch('http://localhost:3030/rate')
       .then((response) => {
         return response.json();
       })
@@ -72,11 +74,15 @@ export default function Page() {
 
         setLastCurrencyRateUpdateTimestamp(getTime());
       })
-      .catch(() => console.error('Error fetching exchange data'));
+      .catch(() => {
+        console.warn('Error fetching exchange rate data');
+        setExchangeRateFetchError(true);
+        setExchangeRate(null)
+      });
   };
 
   const convertCurrency = () => {
-    fetch('/api/exchange-rate')
+    fetch('http://localhost:3030/rate')
       .then((response) => {
         return response.json();
       })
@@ -84,6 +90,11 @@ export default function Page() {
         const exchangedAmount =
           +data.exchange_rate * (inputAmountInEur as number);
         const roundedExchangedAmount = Math.round(exchangedAmount * 100) / 100;
+
+        if (Number.isNaN(roundedExchangedAmount)) {
+          throw new Error('Could not get the converted currency amount');
+        }
+
         setConvertedCurrencyRate(roundedExchangedAmount);
       })
       .catch(() => {
@@ -96,10 +107,10 @@ export default function Page() {
     setIsFetchingAllTransactions(true);
     setFetchAllTransactionError(false);
 
-    fetch('/api/transaction')
+    fetch('http://localhost:3030/transaction')
       .then((response) => response.json())
-      .then((transactionsResponse: { transactions: TransactionData[] }) => {
-        setAllTransactions(transactionsResponse.transactions);
+      .then((transactionsResponse: TransactionData[]) => {
+        setAllTransactions(transactionsResponse);
       })
       .catch(() => {
         setFetchAllTransactionError(true);
@@ -113,7 +124,7 @@ export default function Page() {
     setTransactionDetails(null);
     setIsFinalisingTransaction(true);
 
-    fetch('/api/transaction', {
+    fetch('http://localhost:3030/transaction', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -139,9 +150,9 @@ export default function Page() {
   };
 
   useEffect(() => {
-    getExchangeRate();
+    updateExchangeRate();
 
-    const exchangeFetchInterval = setInterval(getExchangeRate, 10000);
+    const exchangeFetchInterval = setInterval(updateExchangeRate, 10000);
 
     return () => clearInterval(exchangeFetchInterval);
   }, []);
@@ -194,10 +205,12 @@ export default function Page() {
         )}
 
         <div>
-          <button className='button' onClick={() => getExchangeRate()}>
+          <button className='button' onClick={() => updateExchangeRate()}>
             Update Exchange rate
           </button>
         </div>
+
+        {exchangeRateFetchError && <p>An error occured while getting the exchange rate. Please try again.</p>}
       </section>
 
       <section className="section-tile">
@@ -322,7 +335,7 @@ export default function Page() {
           {isFetchingAllTransactions && <span>Fetching transactions...</span>}
         </div>
 
-        {allTransactions?.length && (
+        {allTransactions?.length && !fetchAllTransactionError && (
           <TransactionsTable transactions={allTransactions} />
         )}
       </section>
