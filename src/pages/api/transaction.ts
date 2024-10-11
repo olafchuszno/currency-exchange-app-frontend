@@ -49,7 +49,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Transa
       return response.json();
     })
     .then((transactionData: TransactionData) => {
-      // TODO - validation
       res.status(200).json(transactionData);
     })
     .catch((error) => {

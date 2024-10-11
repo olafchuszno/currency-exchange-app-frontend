@@ -87,7 +87,6 @@ export default function Page() {
         const exchangedAmount =
           +data.exchange_rate * (inputAmountInEur as number);
         const roundedExchangedAmount = Math.round(exchangedAmount * 100) / 100;
-        // TODO check without plus operator
         setConvertedCurrencyRate(roundedExchangedAmount);
       })
       .catch(() => {
