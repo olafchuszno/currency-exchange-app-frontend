@@ -63,7 +63,7 @@ export default function Page() {
   }, [exchangeRate, transactionAmount]);
 
   const updateExchangeRate = () => {
-    fetch('http://localhost:3030/rate')
+    fetch('http://localhost:4000/rate')
       .then((response) => {
         return response.json();
       })
@@ -82,7 +82,7 @@ export default function Page() {
   };
 
   const convertCurrency = () => {
-    fetch('http://localhost:3030/rate')
+    fetch('http://localhost:4000/rate')
       .then((response) => {
         return response.json();
       })
@@ -107,7 +107,7 @@ export default function Page() {
     setIsFetchingAllTransactions(true);
     setFetchAllTransactionError(false);
 
-    fetch('http://localhost:3030/transaction')
+    fetch('http://localhost:4000/transaction')
       .then((response) => response.json())
       .then((transactionsResponse: TransactionData[]) => {
         setAllTransactions(transactionsResponse);
@@ -124,7 +124,7 @@ export default function Page() {
     setTransactionDetails(null);
     setIsFinalisingTransaction(true);
 
-    fetch('http://localhost:3030/transaction', {
+    fetch('http://localhost:4000/transaction', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

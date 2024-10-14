@@ -15,7 +15,7 @@ interface TransactionError {
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<TransactionData | {transactions: TransactionData[]} | TransactionError>) {
   if (req.method === 'GET') {
-    fetch('http://localhost:3030/transaction')
+    fetch('http://localhost:4000/transaction')
       .then((response) => response.json())
       .then((transactions: TransactionData[]) => {
         return res.status(200).json({transactions})
@@ -34,7 +34,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Transa
     throw new Error('Error - Wrong transaction amount')
   }
 
-  return fetch('http://localhost:3030/transaction', {
+  return fetch('http://localhost:4000/transaction', {
     method: "POST",
     headers: {
       'Content-Type': 'application/json',
