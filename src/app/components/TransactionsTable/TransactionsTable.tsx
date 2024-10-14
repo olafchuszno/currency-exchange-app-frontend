@@ -25,7 +25,7 @@ export const TransactionsTable: React.FC<Props> = memo(({ transactions, shortene
       </tr>
     </thead>
     <tbody>
-      {transactions.length &&
+      {!!transactions.length &&
         transactions.map((transaction: TransactionData) => (
           <tr className="transactions-table__row" key={transaction.id}>
             <td className="transactions-table__data">{transaction.transaction_eur_amount}</td>
