@@ -1,4 +1,5 @@
 import './reset.scss';
+import './layout.scss';
 
 export const metadata = {
   title: 'Next.js',
@@ -12,7 +13,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{backgroundColor: "rgb(67, 62, 62)"}}>{children}</body>
+      <body style={{ backgroundColor: "rgb(67, 62, 62)" }}>
+        <header>
+          <nav className='navbar'>
+            <a className='navbar__link' href="/rate">Currency Rate</a>
+            <a className='navbar__link' href="/calculator">Exchange Calculator</a>
+            <a className='navbar__link' href="/transaction">
+              Transaction
+            </a>
+            <a className='navbar__link' href="/transactions">
+              Transactions List
+            </a>
+          </nav>
+        </header>
+        {children}
+      </body>
     </html>
   )
 }
