@@ -1,22 +1,26 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react';
 import '../styles/main.scss';
+
+const RATE_API_URL: string =
+  (process.env['NEXT_PUBLIC_LOCALHOST_API_URL'] || '') + '/rate';
 
 export default function Page() {
   const [currencyExchangeFormError, setCurrencyExchangeFormError] =
-  useState<boolean>(false);
-const [convertedCurrencyRate, setConvertedCurrencyRate] = useState<
-  number | null
->(null);
+    useState<boolean>(false);
 
-const [inputAmountInEur, setInputAmountInEur] = useState<number | null>(null);
-const [inputAmountInEurError, setInputAmountInEurError] =
-  useState<boolean>(false);
+  const [convertedCurrencyRate, setConvertedCurrencyRate] = useState<
+    number | null
+  >(null);
 
-  const RATE_API_URL: string = process.env.RATE_API_URL || '';
+  const [inputAmountInEur, setInputAmountInEur] = useState<number | null>(null);
+  const [inputAmountInEurError, setInputAmountInEurError] =
+    useState<boolean>(false);
 
-  const handleExchangeRateInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleExchangeRateInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     event.preventDefault();
     setInputAmountInEurError(false);
     const valueFromInput: string = event.target.value;
@@ -29,7 +33,7 @@ const [inputAmountInEurError, setInputAmountInEurError] =
       return;
     }
     setInputAmountInEur(numericValueFromInput);
-  }
+  };
 
   const convertCurrency = () => {
     fetch(RATE_API_URL)
@@ -73,7 +77,6 @@ const [inputAmountInEurError, setInputAmountInEurError] =
 
           convertCurrency();
         }}
-        action=""
       >
         <div className="button-pair">
           <input
@@ -109,7 +112,6 @@ const [inputAmountInEurError, setInputAmountInEurError] =
           <span data-cy="converted-currency-rate">{convertedCurrencyRate}</span>
         </div>
       )}
-      </main>
+    </main>
   );
 }
-
