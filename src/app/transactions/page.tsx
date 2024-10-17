@@ -3,6 +3,7 @@
 import { TransactionData } from "@/pages/api/transaction";
 import TransactionsTable from "./TransactionsTable";
 import { UpdateTransactionsForm } from "./UpdateTransactionsForm";
+import { getEnvVariable } from "../helpers/getEnvVariable";
 import '../styles/main.scss';
 
 interface TransactionFetchError {
@@ -12,8 +13,10 @@ interface TransactionFetchError {
 type TransactionsFetchResponse = TransactionData[] | TransactionFetchError;
 
 const getAllTransactions = async (): Promise<TransactionsFetchResponse> => {
+  const transactionUrl = getEnvVariable('DOCKER_INTERNAL_API_URL', '/transaction')
+
   try {
-  const response = await fetch('http://host.docker.internal:4000/transaction');
+    const response = await fetch(transactionUrl);
   
     const data: TransactionData[] = await response.json();
     

@@ -1,25 +1,20 @@
-// import getTime from "@/app/helpers/getTime";
+
 import getTime from "@/app/helpers/getTime";
 import UpdateRateForm from "./UpdateRateForm";
+import { getEnvVariable } from "../helpers/getEnvVariable";
 import '../styles/main.scss';
-// import { useEffect, useState } from "react";
 
 export const getExchangeRate = async () => {
-  const RATE_API_URL: string = process.env.RATE_API_URL || '';
+  const RATE_API_URL = getEnvVariable('DOCKER_INTERNAL_API_URL', '/rate');
+
+  console.log('//// RATE_API_URL:', RATE_API_URL)
 
   try {
-    console.log('fetch this url:', RATE_API_URL)
-    const response = await fetch('http://host.docker.internal:4000/rate');
-
-    console.log('--- 1 ---')
+    const response = await fetch(RATE_API_URL);
 
     const data = await response.json();
 
-    console.log('--- 2 ---')
-
     const { exchange_rate } = data;
-
-    console.log('--- 3 ---')
 
   return {
     exchangeRate: exchange_rate,
@@ -43,10 +38,6 @@ export default async function Page() {
 
 
   const exchangeRateCallResponse = await getExchangeRate();
-
-  console.log('env url:', process.env.RATE_API_URL);
-
-  console.log(exchangeRateCallResponse);
 
   if (exchangeRateCallResponse.error) {
     return 'Error occured';
