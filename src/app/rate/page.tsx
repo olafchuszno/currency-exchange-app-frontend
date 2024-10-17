@@ -7,8 +7,6 @@ import '../styles/main.scss';
 export const getExchangeRate = async () => {
   const RATE_API_URL = getEnvVariable('DOCKER_INTERNAL_API_URL', '/rate');
 
-  console.log('//// RATE_API_URL:', RATE_API_URL)
-
   try {
     const response = await fetch(RATE_API_URL);
 

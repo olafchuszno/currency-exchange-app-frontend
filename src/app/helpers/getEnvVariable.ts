@@ -5,9 +5,5 @@ export function getEnvVariable (envVariableKey: string, concatWithValue: string 
   
   const envVariableValue = process.env[envVariableKey] || '';
 
-  if (envVariableValue === '') {
-    console.error('envVariableValue is epmty. Value:', envVariableValue);
-}
-
   return  `${envVariableValue}${concatWithValue}`;
 }
