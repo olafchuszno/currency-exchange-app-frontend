@@ -1,10 +1,19 @@
-
-import getTime from "@/app/helpers/getTime";
-import UpdateRateForm from "./UpdateRateForm";
-import { getEnvVariable } from "../helpers/getEnvVariable";
+import UpdateRateForm from './UpdateRateForm';
+import getEnvVariable from '../helpers/getEnvVariable';
+import RateFetchError from './RateFetchError';
+import getTime from '@/app/helpers/getTime';
 import '../styles/main.scss';
 
-export const getExchangeRate = async () => {
+type FetchError = {
+  error: Error
+};
+
+type ExchangeRateData = {
+  exchangeRate: number,
+  timestamp: string
+};
+
+export const getExchangeRate = async (): Promise<ExchangeRateData | FetchError> => {
   const RATE_API_URL = getEnvVariable('DOCKER_INTERNAL_API_URL', '/rate');
 
   try {
@@ -14,52 +23,34 @@ export const getExchangeRate = async () => {
 
     const { exchange_rate } = data;
 
-  return {
-    exchangeRate: exchange_rate,
-    timestamp: getTime()
-    }
-  } catch (e) {
     return {
-      error: e
-    }
+      exchangeRate: exchange_rate,
+      timestamp: getTime(),
+    };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error : new Error('Error occured while getting the exchange rate.'),
+    };
   }
 };
 
 export default async function Page() {
-  // const exchangeRateDetails = await getExchangeRateDetails();
-
-  // const [exchangeRate, setExchangeRate] = useState<null | number>(null);
-  // const [exchangeRateFetchError, setExchangeRateFetchError] = useState<boolean>(false);
-
-  // const [lastCurrencyRateUpdateTimestamp, setLastCurrencyRateUpdateTimestamp] =
-  //   useState<string | null>(null);
-
-
   const exchangeRateCallResponse = await getExchangeRate();
 
-  if (exchangeRateCallResponse.error) {
-    return 'Error occured';
-  }
+  const hasFetchError = 'error' in exchangeRateCallResponse;
 
-  const { exchangeRate, timestamp } = exchangeRateCallResponse;
+  const { exchangeRate, timestamp } = (exchangeRateCallResponse as ExchangeRateData);
 
   return (
     <main className="main">
-        <h2 className="title title--2">Exchange rate</h2>
+      <h2 className="title title--2">Exchange rate</h2>
 
-        <p>
-          Exchange rate: <span data-cy="exchange-rate">{exchangeRate}</span>
-        </p>
+      {hasFetchError ? (
+        <RateFetchError />
+      ) : (
+        <UpdateRateForm exchangeRate={exchangeRate} timestamp={timestamp} />
+      )}
 
-        {!!timestamp && (
-          <p>Last exchange rate update: {timestamp}</p>
-        )}
-
-        <div>
-          <UpdateRateForm />
-        </div>
-
-        {/* {exchangeRateFetchError && <p>An error occured while getting the exchange rate. Please try again.</p>} */}
     </main>
-  )
+  );
 }
