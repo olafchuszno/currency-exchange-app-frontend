@@ -20,10 +20,9 @@ export default function Page() {
   const [transactionAmount, setTransactionAmount] = useState<number | null>(
     null
   );
-  // const [forecastedTransactionPlnAmount, setForecastedTransactionPlnAmount] =
-  //   useState<number | null>(null);
   const [transactionDetails, setTransactionDetails] =
     useState<TransactionData | null>(null);
+
   const [transactionError, setTransactionError] =
     useState<TransactionError | null>(null);
 
@@ -102,15 +101,6 @@ export default function Page() {
             <button className='button button-pair__child' type="submit">Make a transaction</button>
           </div>
         </form>
-
-        {/* {forecastedTransactionPlnAmount &&
-          !transactionDetails &&
-          !isFinalisingTransaction && (
-            <div>
-              <p>Forecasted amonut in PLN: {forecastedTransactionPlnAmount}</p>
-              <p>(exchange rate is fluctuating and is likely to change)</p>
-            </div>
-          )} */}
 
         {isFinalisingTransaction && <p>Finalising the transaction...</p>}
 
