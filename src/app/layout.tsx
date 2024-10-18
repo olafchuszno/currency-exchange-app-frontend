@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ backgroundColor: "rgb(67, 62, 62)" }}>
+      <body className='body'>
         <header>
           <nav className='navbar'>
             <a className='navbar__link' href="/rate">Currency Rate</a>
